@@ -1,3 +1,3 @@
 fn main() -> () {
-    println!("hello day 1!");
+    println!("I just did this one in an interpreter");
 }
