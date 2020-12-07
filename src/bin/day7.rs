@@ -1,5 +1,4 @@
 use std::collections::{HashMap, HashSet};
-use std::convert::TryInto;
 
 fn main() -> () {
     let bags = Bags::parse(INPUT);
@@ -42,34 +41,26 @@ impl Bags {
     fn parse(s: &str) -> Self {
         let mut bags = Bags::default();
         for line in s.lines() {
-            let [bag, contained_bags]: [&str; 2] = line
-                .split(" contain ")
-                .collect::<Vec<_>>()
-                .try_into()
-                .unwrap();
-            let (adj, color) = {
-                let mut split = bag.split(" ");
-                let adj = split.next().unwrap();
-                let color = split.next().unwrap();
-                (
-                    bags.adjectives.get_or_add(adj.to_owned()),
-                    bags.colors.get_or_add(color.to_owned()),
-                )
-            };
+            let mut split = line.split(" ");
+            let adj = bags.adjectives.get_or_add(split.next().unwrap());
+            let color = bags.colors.get_or_add(split.next().unwrap());
+            let _ = split.next();
+            let _ = split.next();
             let mut contains = Vec::new();
-            if contained_bags != "no other bags." {
-                let mut split = contained_bags.split(" ");
-                loop {
-                    let amount = split.next().unwrap().parse::<usize>().unwrap();
-                    let adj = bags.adjectives.get_or_add(split.next().unwrap().to_owned());
-                    let color = bags.colors.get_or_add(split.next().unwrap().to_owned());
-                    contains.push(BagCapacity {
-                        amount,
-                        handle: (adj, color),
-                    });
-                    if split.next().unwrap().ends_with(".") {
-                        break;
-                    }
+            loop {
+                let amount = split.next().unwrap();
+                if amount == "no" {
+                    break;
+                }
+                let amount = amount.parse::<usize>().unwrap();
+                let adj = bags.adjectives.get_or_add(split.next().unwrap());
+                let color = bags.colors.get_or_add(split.next().unwrap());
+                contains.push(BagCapacity {
+                    amount,
+                    handle: (adj, color),
+                });
+                if split.next().unwrap().ends_with(".") {
+                    break;
                 }
             }
             bags.add_bag(Bag {
@@ -187,15 +178,13 @@ struct IndexedStrings {
 }
 
 impl IndexedStrings {
-    fn get_or_add(&mut self, new: String) -> usize {
-        for (i, s) in self.idx_to_string.iter().enumerate() {
-            if s == &new {
-                return i;
-            }
+    fn get_or_add(&mut self, new: &str) -> usize {
+        if let Some(u) = self.string_to_idx.get(new) {
+            return *u;
         }
         let idx = self.idx_to_string.len();
-        self.idx_to_string.push(new.clone());
-        self.string_to_idx.insert(new, idx);
+        self.idx_to_string.push(new.to_owned());
+        self.string_to_idx.insert(new.to_owned(), idx);
         idx
     }
 
