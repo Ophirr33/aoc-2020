@@ -20,7 +20,6 @@ fn main() -> () {
         {
             let mut nop = Instruction::NOP;
             swap(&mut boot_code.instructions[i], &mut nop);
-            boot_code.instructions[i] = Instruction::NOP;
             if let ExecuteResult::RanToEnd { acc } = boot_code.execute_until_loop_or_end() {
                 println!("part 2: {} (loop was fixed at {})", acc, i);
                 break;
