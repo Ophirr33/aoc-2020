@@ -99,4 +99,4 @@ impl BootCode {
     }
 }
 
-const INPUT: &'static str = include_str!("day8.txt");
+const INPUT: &'static str = include_str!("day08.txt");

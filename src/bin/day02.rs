@@ -58,4 +58,4 @@ impl PolicyAndPassword {
     }
 }
 
-const INPUT: &'static str = include_str!("day2.txt");
+const INPUT: &'static str = include_str!("day02.txt");

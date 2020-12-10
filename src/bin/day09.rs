@@ -63,4 +63,4 @@ impl XmasCracker {
     }
 }
 
-const INPUT: &'static str = include_str!("day9.txt");
+const INPUT: &'static str = include_str!("day09.txt");

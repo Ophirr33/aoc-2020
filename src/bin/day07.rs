@@ -197,4 +197,4 @@ impl IndexedStrings {
     }
 }
 
-const INPUT: &'static str = include_str!("day7.txt");
+const INPUT: &'static str = include_str!("day07.txt");

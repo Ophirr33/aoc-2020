@@ -75,4 +75,4 @@ fn test_seat_id() {
     assert_eq!(pass.seat_id(), 357);
 }
 
-const INPUT: &'static str = include_str!("day5.txt");
+const INPUT: &'static str = include_str!("day05.txt");

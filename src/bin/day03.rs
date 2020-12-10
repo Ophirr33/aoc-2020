@@ -33,4 +33,4 @@ impl Forest {
     }
 }
 
-const INPUT: &'static str = include_str!("day3.txt");
+const INPUT: &'static str = include_str!("day03.txt");

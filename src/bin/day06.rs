@@ -27,4 +27,4 @@ fn main() -> () {
     println!("{}", part_2_answer);
 }
 
-const INPUT: &'static str = include_str!("day6.txt");
+const INPUT: &'static str = include_str!("day06.txt");

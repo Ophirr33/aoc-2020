@@ -105,4 +105,4 @@ fn actually_valid(p: &Passport) -> bool {
     byr_valid && iyr_valid && eyr_valid && hgt_valid && hcl_valid && ecl_valid && pid_valid
 }
 
-const INPUT: &'static str = include_str!("day4.txt");
+const INPUT: &'static str = include_str!("day04.txt");
