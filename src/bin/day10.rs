@@ -40,10 +40,7 @@ fn distinct_adapter_arrangements(adapters: Vec<usize>) -> usize {
             }
         }
     }
-    steps
-        .iter()
-        .map(|step| step.last().unwrap_or(&0))
-        .sum()
+    steps.iter().map(|step| step.last().unwrap_or(&0)).sum()
 }
 
 const INPUT: &'static str = include_str!("day10.txt");
