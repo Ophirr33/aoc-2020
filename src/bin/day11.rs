@@ -2,13 +2,15 @@ use std::convert::TryFrom;
 
 fn main() -> () {
     let seats = AirportSeats::parse(INPUT);
-    let seats = advance_until_stable(seats);
-    println!("{}", seats.count_occupied());
+    let part1_seats = advance_until_stable(seats.clone(), Strategy::Part1);
+    println!("{}", part1_seats.count_occupied());
+    let part2_seats = advance_until_stable(seats, Strategy::Part2);
+    println!("{}", part2_seats.count_occupied());
 }
 
-fn advance_until_stable(mut seats: AirportSeats) -> AirportSeats {
+fn advance_until_stable(mut seats: AirportSeats, strategy: Strategy) -> AirportSeats {
     loop {
-        let new_seats = seats.advance_seats();
+        let new_seats = seats.advance_seats(strategy);
         if new_seats == seats {
             return new_seats;
         }
@@ -42,14 +44,23 @@ impl AirportSeats {
             .sum()
     }
 
-    fn advance_seats(&self) -> Self {
+    fn advance_seats(&self, counting_strategy: Strategy) -> Self {
         let mut result = self.clone();
+        let occupied_rule = match counting_strategy {
+            Strategy::Part1 => 4,
+            Strategy::Part2 => 5,
+        };
         for (y, row) in self.seats.iter().enumerate() {
             for (x, spot) in row.iter().enumerate() {
-                let num_occupied = self.occupied_seats_by(x, y);
+                let num_occupied = match counting_strategy {
+                    Strategy::Part1 => self.occupied_seats_by(x, y),
+                    Strategy::Part2 => self.visible_occupied_seats_from(x, y),
+                };
                 match spot {
                     Spot::Empty if num_occupied == 0 => result.seats[y][x] = Spot::Occupied,
-                    Spot::Occupied if num_occupied >= 4 => result.seats[y][x] = Spot::Empty,
+                    Spot::Occupied if num_occupied >= occupied_rule => {
+                        result.seats[y][x] = Spot::Empty
+                    }
                     _ => {}
                 }
             }
@@ -80,6 +91,63 @@ impl AirportSeats {
         }
         result
     }
+
+    fn visible_occupied_seats_from(&self, x: usize, y: usize) -> usize {
+        use Op::*;
+        let x_len = self.seats[0].len();
+        let y_len = self.seats.len();
+        let has_visible_from = |x_op: Op, y_op: Op| {
+            let mut x = x;
+            let mut y = y;
+            loop {
+                match x_op {
+                    Add(1) if x == x_len - 1 => break,
+                    Sub(1) if x == 0 => break,
+                    _ => x = x_op.op(x),
+                }
+                match y_op {
+                    Add(1) if y == y_len - 1 => break,
+                    Sub(1) if y == 0 => break,
+                    _ => y = y_op.op(y),
+                }
+                match self.seats[y][x] {
+                    Spot::Occupied => return 1,
+                    Spot::Empty => return 0,
+                    _ => {}
+                }
+            }
+            0
+        };
+        has_visible_from(Sub(1), Sub(1))
+            + has_visible_from(Sub(1), Add(0))
+            + has_visible_from(Sub(1), Add(1))
+            + has_visible_from(Add(0), Add(1))
+            + has_visible_from(Add(1), Add(1))
+            + has_visible_from(Add(1), Add(0))
+            + has_visible_from(Add(1), Sub(1))
+            + has_visible_from(Add(0), Sub(1))
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+enum Op {
+    Add(usize),
+    Sub(usize),
+}
+
+impl Op {
+    fn op(&self, n: usize) -> usize {
+        match self {
+            Op::Add(i) => n + i,
+            Op::Sub(i) => n - i,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+enum Strategy {
+    Part1,
+    Part2,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
